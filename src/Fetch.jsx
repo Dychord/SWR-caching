@@ -23,6 +23,8 @@ function Fetch() {
     <>
         {/* Card component */}
         {/* {isValidating && <div className='w-full h-screen'>Re-fetching...</div>}  */}
+        <Navbar />
+
         <div className="flex flex-wrap p-10 gap-10 w-full bg-zinc-900 text-white">
           {data.map((item) => (
             <div key={item.id} className="w-48 h-80 flex flex-col bg-zinc-800 hover:scale-105 transition cursor-pointer overflow-hidden rounded-lg">
