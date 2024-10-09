@@ -1,24 +1,33 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import instance from '../utils/axios'
+import { AuthContext } from '../context/authContext'
 
 
 
 
 function Navbar() {
   const navigate = useNavigate()
+  const {logout, token} = useContext(AuthContext)
+
+
   const handleLogout = async ()=>{
-    const token = localStorage.getItem('token');
+
     const response = await instance.get('/logout', {
       headers: {
         Authorization: `Bearer ${token}`, // Set the token in the Authorization header
       },
     })
     try {
+      
+      if (!token) {
+        console.log("No token found!");
+        return; // Early return if no token
+    }
       if(response.data.success){
-        localStorage.removeItem('token')
+        logout()
         navigate('/login')
-        console.log("logged out successful");
+        // console.log("logged out successful");
       }
       else console.log("No token found!");
     } catch (error) {

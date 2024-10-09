@@ -63,7 +63,6 @@ router.get('/logout', (req,res)=>{
                 { username: user.username },
                 { $push: { blackList: token } }
             );
-
             if (tokenPushed.modifiedCount > 0) {
                 return res.json({ success: true, message: "Logged out successfully!" });
             } else {

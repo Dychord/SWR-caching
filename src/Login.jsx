@@ -14,15 +14,13 @@ function Login() {
   async function handleFormData(data) {
     try {
         const response = await instance.post('/login', data);
-        // console.log(response.data);
         reset();
         if(response.data.success){
           const accessToken = response.data.token; // Extract accessToken here
-
-          localStorage.setItem('token', accessToken);
+          login(accessToken)
           navigate('/fetch')
         }
-          
+
     } catch (err) {
         console.log(err.message);
     }
