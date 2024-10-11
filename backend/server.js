@@ -8,5 +8,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/', require('./auth/userAuth'))
+app.use('/products/', require('./controllers/productController'))
+
+
 
 app.listen(3000)

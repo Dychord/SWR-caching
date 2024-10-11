@@ -4,4 +4,8 @@ const instance = axios.create({
     baseURL: 'http://localhost:3000/'
 })
 
+const instanceProduct = axios.create({
+    baseURL: 'http://localhost:3000/products'
+})
+
 export default instance;

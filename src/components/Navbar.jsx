@@ -23,13 +23,14 @@ function Navbar() {
       if (!token) {
         console.log("No token found!");
         return; // Early return if no token
-    }
+      }
       if(response.data.success){
         logout()
+        console.log(response.data);
         navigate('/login')
         // console.log("logged out successful");
       }
-      else console.log("No token found!");
+      else console.log("Logout not successfull!");
     } catch (error) {
       console.log(error.message);
     }
@@ -39,7 +40,6 @@ function Navbar() {
     <>
         <div className='w-full h-20 bg-zinc-800 text-white text-xl flex gap-10 items-center justify-end px-10'>
             <Link to='/fetch'>Fetch</Link>
-            <Link to='/clear'>Clear</Link>
             <Link to='/comments'>Comments</Link>
             <Link onClick={handleLogout} className='text-red-700'>Logout</Link>
         </div> 

@@ -48,31 +48,60 @@ router.post('/login', async (req,res)=>{
 })
 
 
+const authMiddleware = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
-router.get('/logout', (req,res)=>{
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
-    if(!token) return res.json({success: false, message: "Token does not exists!"})
-    jwt.verify(token, process.env.ACCESS_TOKEN, async (err,user)=>{
+    // Check if token is provided
+    if (!token) {
+        return res.status(401).json({ success: false, message: 'Token does not exist!' });
+    }
+
+    // Verify the token
+    jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
         if (err) {
-            return res.json({ success: false, message: err.message });
+            return res.status(403).json({ success: false, message: 'Token is invalid!' });
         }
-        try {
-            // Push the token to the blacklist
-            const tokenPushed = await userModel.updateOne(
-                { username: user.username },
-                { $push: { blackList: token } }
-            );
-            if (tokenPushed.modifiedCount > 0) {
-                return res.json({ success: true, message: "Logged out successfully!" });
-            } else {
-                return res.json({ success: false, message: "Error logging you out!" });
-            }
-        } catch (error) {
-            console.error("Error logging out:", error.message);
+
+        // Attach user information to the request object
+        req.user = user;
+
+        // Proceed to the next middleware or route handler
+        next();
+    });
+};
+
+
+router.get('/logout', authMiddleware ,async (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.json({ success: false, message: "Token does not exist!" });
+
+    try {
+        // Decode the token to get the username (do not verify it)
+        const decodedToken = jwt.decode(token);
+        const username = decodedToken?.username; // Adjust based on your token structure
+
+        // Check if username exists
+        const user = await userModel.findOne({ username });
+        if (!user) return res.json({ success: false, message: "User not found!" });
+
+        // Push the token to the blacklist
+        const tokenPushed = await userModel.updateOne(
+            { username },
+            { $push: { blackList: token } }
+        );
+
+        if (tokenPushed.modifiedCount > 0) {
+            return res.json({ success: true, message: "Logged out successfully!" });
+        } else {
             return res.json({ success: false, message: "Error logging you out!" });
         }
-    })
-})
+    } catch (error) {
+        console.error("Error logging out:", error.message);
+        return res.json({ success: false, message: "Error logging you out!" });
+    }
+});
+
 
 module.exports = router;

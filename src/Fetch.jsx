@@ -19,11 +19,28 @@ function Fetch() {
     if(error) return <p>{error.message}</p>
     if(!data) return <h1>Loading...</h1>
 
+    function addProduct() {
+      fetch('https://fakestoreapi.com/products',{
+        method:"POST",
+        body:JSON.stringify(
+            {
+                title: 'test product',
+                price: 13.5,
+                description: 'lorem ipsum set',
+                image: 'https://i.pravatar.cc',
+                category: 'electronic'
+            }
+        )
+    })
+        .then(res=>res.json())
+        .then(json=>console.log(json))
+    }
   return (
     <>
         {/* Card component */}
         {/* {isValidating && <div className='w-full h-screen'>Re-fetching...</div>}  */}
         <Navbar />
+        <button onClick={addProduct} className='absolute text-white bg-green-500 px-3 py-1 rounded-lg right-5'>Add product</button>
 
         <div className="flex flex-wrap p-10 gap-10 w-full bg-zinc-900 text-white">
           {data.map((item) => (
